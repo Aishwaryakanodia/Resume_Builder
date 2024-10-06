@@ -5,7 +5,11 @@ import BackNextBtnComponent from "./BackNextBtnComponent";
 import InputComponent from "./InputComponent";
 import SelectComponent from "./SelectComponent";
 import { connect } from "react-redux";
-import { addEducation } from "../Redux/actions";
+import {
+  addEducation,
+  addExperience, // Ensure this is imported
+  addAllExperience, // Ensure this is imported
+} from "../Redux/actions";
 import { useForm, Controller } from "react-hook-form";
 
 const years = ["2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013"];
