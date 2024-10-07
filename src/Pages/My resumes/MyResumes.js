@@ -8,6 +8,7 @@ import { Box } from "@mui/system";
 import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
+import JsPDF from "jspdf";
 import { connect } from "react-redux";
 import {
   addAllExperience,
@@ -16,7 +17,7 @@ import {
   editSkill,
   selectResume,
   selectTemplate,
-} from "../../Redux/actions"; // Ensure all these are correctly defined in your action creators file
+} from "../../Redux/actions";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Common/Navbar";
 
@@ -28,12 +29,10 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-// Map the Redux state to component props
 const mapStateToProps = (state) => ({
   selectedTemplateId: state.selectedTemplateReducer.selectedTemplateId,
 });
 
-// Map the Redux dispatch actions to component props
 const mapDispatchToProps = (dispatch) => ({
   setSelectedTemplateId: (id) => dispatch(selectTemplate(id)),
   setSelectedResumeId: (id) => dispatch(selectResume(id)),
@@ -46,21 +45,22 @@ const mapDispatchToProps = (dispatch) => ({
 const MyResumes = (props) => {
   const [resumes, setResumes] = useState([]);
 
-  // Fetch the resume data from localStorage on component mount
   useEffect(() => {
     const newResumes = window.localStorage.getItem("resumes")
       ? JSON.parse(window.localStorage.getItem("resumes"))
       : [];
+
     setResumes(newResumes);
   }, []);
 
   const navigate = useNavigate();
 
-  // Get the template associated with a resume
   const getTemplate = (resume, index) => {
     let template = templates.find(
       (eachTemplate) => eachTemplate.id === resume.template_id
     );
+    // console.log("resume",resume)
+    // console.log("template", template);
 
     const TemplateComp = React.cloneElement(template.template, {
       personalinfo: resume.personalInfo,
@@ -74,26 +74,39 @@ const MyResumes = (props) => {
     return TemplateComp;
   };
 
-  // Delete a resume from the list and update localStorage
   const deleteResume = (resume) => {
     let resumes = window.localStorage.getItem("resumes");
+
     let newResumes = JSON.parse(resumes);
-    const newSetOfResumes = newResumes.filter(
-      (eachResume) => eachResume.id !== resume.id
-    );
+    const newSetOfResumes = newResumes.filter((eachResume) => {
+      return eachResume.id !== resume.id;
+    });
+
     window.localStorage.setItem("resumes", JSON.stringify(newSetOfResumes));
     setResumes(newSetOfResumes);
   };
 
-  // Set Redux state with selected resume's data
+  
+
   const setUserData = (resume) => {
+    // console.log(resume);
+    //set personal info
+
     props.onAddPersonalInfo(resume.personalInfo);
+
+    //set work experience
+
     props.setAllExperience(resume.experiences);
+
+    //set education info
+
     props.onAddEducation(resume.educationInfo);
+
+    //set skills
+
     props.onEditSkill(resume.skills);
   };
 
-  // Navigate to the detail filling page for a selected resume
   const navigateToFillDetails = (resume) => {
     props.setSelectedTemplateId(resume.template_id);
     props.setSelectedResumeId(resume.id);
@@ -101,46 +114,72 @@ const MyResumes = (props) => {
     navigate("/template/fill-details");
   };
 
+  // console.log(resumes);
   return (
     <>
       <Navbar active={"My Resumes"} />
       <div className="my-resumes">
         <Box sx={{ flexGrow: 1 }}>
-          <Grid container justifyContent="center" alignItems="center" className="grid">
+          <Grid
+            container
+            justifyContent="center"
+            alignItems="center"
+            className="grid">
             {resumes.length >= 1 ? (
-              resumes.map((resume, index) => (
-                <Grid item className={`resume`} id={`${index}resume`} margin={2} key={index}>
-                  <Item id={`${index}ITEM`}>
-                    {getTemplate(resume, index)}
-                    <BlackScreen />
-                    <div className="use-template-btn-cont">
-                      <Button className="use-template-btn" size="medium" variant="contained">
-                        Download
-                      </Button>
-                      <Button
-                        className="use-template-btn"
-                        onClick={() => {
-                          deleteResume(resume);
-                        }}
-                        size="medium"
-                        variant="contained">
-                        Delete
-                      </Button>
-                      <Button
-                        className="use-template-btn"
-                        onClick={() => navigateToFillDetails(resume)}
-                        size="medium"
-                        variant="contained">
-                        Edit Template
-                      </Button>
-                    </div>
-                  </Item>
-                </Grid>
-              ))
+              resumes.map((resume, index) => {
+                return (
+                  <Grid
+                    item
+                    className={`resume `}
+                    id={`${index}resume`}
+                    margin={2}
+                    key={index}>
+                    <Item id={`${index}ITEM`}>
+                      {getTemplate(resume, index)}
+                      <BlackScreen />
+                      <div className="use-template-btn-cont">
+                        <Button
+                          // sx={{
+                          //   position: "relative",
+                          //   top: "-35vh",
+                          //   left: "0px",
+                          //   transform: "inherit",
+                          // }}
+                          className="use-template-btn"
+                          onClick={() => {
+                           
+                          }}
+                          size="medium"
+                          variant="contained">
+                          Download
+                        </Button>
+                        <Button
+                          className="use-template-btn"
+                          onClick={() => {
+                            deleteResume(resume);
+                          }}
+                          size="medium"
+                          variant="contained">
+                          Delete
+                        </Button>
+                        <Button
+                          className="use-template-btn"
+                          onClick={() => navigateToFillDetails(resume)}
+                          size="medium"
+                          variant="contained">
+                          Edit Template
+                        </Button>
+                      </div>
+                    </Item>
+                  </Grid>
+                );
+              })
             ) : (
               <div className="no-resumes-container">
                 <SentimentVeryDissatisfiedIcon fontSize="large" />
-                <p className="no-resumes-text">Make at least one Resume</p>
+                <p className="no-resumes-text">
+                  Make atleast one Resume
+                </p>
               </div>
             )}
           </Grid>
@@ -150,5 +189,4 @@ const MyResumes = (props) => {
   );
 };
 
-// Connect component to Redux store
 export default connect(mapStateToProps, mapDispatchToProps)(MyResumes);

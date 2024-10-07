@@ -5,42 +5,73 @@ import BackNextBtnComponent from "./BackNextBtnComponent";
 import InputComponent from "./InputComponent";
 import SelectComponent from "./SelectComponent";
 import { connect } from "react-redux";
-import {
-  addEducation,
-  addExperience, // Ensure this is imported
-  addAllExperience, // Ensure this is imported
-} from "../Redux/actions";
+import { addEducation } from "../Redux/actions";
 import { useForm, Controller } from "react-hook-form";
+import { addAllExperience, addExperience } from "../Redux/actions";
 
-const years = ["2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013"];
-
-// Main Redux state and dispatch mapping (single instance)
 const mapStateToProps = (state) => ({
   educationInfo: state.educationDetailsReducer.educationInfo,
-  experiences: state.workExperienceReducer.experiences,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onAddEducation: (details) => dispatch(addEducation(details)),
-  setExperience: (experience) => dispatch(addExperience(experience)),
-  setAllExperience: (experiences) => dispatch(addAllExperience(experiences)),
 });
+
+const years = [
+  "2022",
+  "2021",
+  "2020",
+  "2019",
+  "2018",
+  "2017",
+  "2016",
+  "2015",
+  "2014",
+  "2013",
+];
 
 const EducationComponent = (props) => {
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit, control, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
 
-  // Handler functions for back and next
-  const handleBack = () => props.setTab(props.tab - 1);
+  const mapStateToProps = (state) => ({
+    experiences: state.workExperienceReducer.experiences,
+  });
   
+  const mapDispatchToProps = (dispatch) => ({
+    setExperience: (experience) => dispatch(addExperience(experience)),
+    setAllExperience: (experiences) => dispatch(addAllExperience(experiences)),
+  });
+  const handleBack = () => {
+    props.setTab(props.tab - 1);
+  };
+
   const handleNext = (data) => {
+    // console.log(data);
     setLoading(true);
     props.onAddEducation(data);
+
     setTimeout(() => {
       setLoading(false);
       props.setTab(props.tab + 1);
     }, 1000);
   };
+  const addNewExperience = () => {
+    props.setExperience({
+      id: props.experiences.length + 1,
+      jobTitle: "",
+      organizationName: "",
+      startYear: "",
+      endYear: "",
+    });
+  };
+
+  // console.log(props.educationInfo, errors);
 
   return (
     <Paper className="education-paper" elevation={3}>
@@ -48,7 +79,6 @@ const EducationComponent = (props) => {
       <Divider sx={{ margin: "10px 0px" }} />
       <form onSubmit={handleSubmit(handleNext)}>
         <div className="education-form-cont">
-          {/* Input fields for domain, university, and degree */}
           <InputComponent
             title={"Domain"}
             type={"text"}
@@ -56,10 +86,13 @@ const EducationComponent = (props) => {
             register={register}
             multiline={false}
             value={props.educationInfo.domain}
-            setValue={(value) => props.onAddEducation({ ...props.educationInfo, domain: value })}
-            error={!!errors.domain}
-            errorMessage={errors.domain?.message}
+            setValue={(value) =>
+              props.onAddEducation({ ...props.educationInfo, domain: value })
+            }
+            error={errors.domain ? true : false}
+            errorMessage={errors.domain ? errors.domain.message : null}
           />
+          <div></div>
           <InputComponent
             title={"University"}
             type={"text"}
@@ -67,9 +100,14 @@ const EducationComponent = (props) => {
             register={register}
             multiline={false}
             value={props.educationInfo.university}
-            setValue={(value) => props.onAddEducation({ ...props.educationInfo, university: value })}
-            error={!!errors.university}
-            errorMessage={errors.university?.message}
+            setValue={(value) =>
+              props.onAddEducation({
+                ...props.educationInfo,
+                university: value,
+              })
+            }
+            error={errors.university ? true : false}
+            errorMessage={errors.university ? errors.university.message : null}
           />
           <InputComponent
             title={"Degree"}
@@ -78,38 +116,57 @@ const EducationComponent = (props) => {
             register={register}
             multiline={false}
             value={props.educationInfo.degree}
-            setValue={(value) => props.onAddEducation({ ...props.educationInfo, degree: value })}
-            error={!!errors.degree}
-            errorMessage={errors.degree?.message}
+            setValue={(value) =>
+              props.onAddEducation({ ...props.educationInfo, degree: value })
+            }
+            error={errors.degree ? true : false}
+            errorMessage={errors.degree ? errors.degree.message : null}
           />
-
-          {/* Select fields for start year and end year */}
-          <SelectComponent title={"Start Year"} errorMessage={errors.startYear?.message} error={!!errors.startYear}>
+          <SelectComponent
+            title={"Start Year"}
+            errorMessage={errors.startYear ? errors.startYear.message : null}
+            error={errors.startYear ? true : false}>
             <Controller
-              render={({ field }) => (
-                <Select value={field.value} onChange={field.onChange} error={!!errors.startYear}>
-                  {years.map((year, index) => (
-                    <MenuItem key={index} value={year}>
-                      {year}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
+              render={(props) => {
+                // console.log(props);
+                return (
+                  <Select
+                    value={props.field.value}
+                    onChange={props.field.onChange}
+                    error={errors.startYear ? true : false}>
+                    {years.map((year, index) => {
+                      return (
+                        <MenuItem key={index} value={year}>
+                          {year}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                );
+              }}
               name={"startYear"}
               control={control}
               rules={{ required: "*Please select start year" }}
               defaultValue={props.educationInfo.startYear}
             />
           </SelectComponent>
-          <SelectComponent title={"End Year"} errorMessage={errors.endYear?.message} error={!!errors.endYear}>
+          <SelectComponent
+            title={"End Year"}
+            errorMessage={errors.endYear ? errors.endYear.message : null}
+            error={errors.endYear ? true : false}>
             <Controller
-              render={({ field }) => (
-                <Select value={field.value} onChange={field.onChange} error={!!errors.endYear}>
-                  {years.map((year, index) => (
-                    <MenuItem key={index} value={year}>
-                      {year}
-                    </MenuItem>
-                  ))}
+              render={(props) => (
+                <Select
+                  value={props.field.value}
+                  onChange={props.field.onChange}
+                  error={errors.endYear ? true : false}>
+                  {years.map((year, index) => {
+                    return (
+                      <MenuItem key={index} value={year}>
+                        {year}
+                      </MenuItem>
+                    );
+                  })}
                 </Select>
               )}
               name={"endYear"}
@@ -120,12 +177,17 @@ const EducationComponent = (props) => {
           </SelectComponent>
         </div>
         <Divider sx={{ margin: "10px 0px" }} />
-        {/* Back and Next buttons */}
-        <BackNextBtnComponent onNext={handleNext} onBack={handleBack} loading={loading} tab={props.tab} nextTitle={"Next"} backTitle={"Back"} />
+        <BackNextBtnComponent
+          onNext={handleNext}
+          onBack={handleBack}
+          loading={loading}
+          tab={props.tab}
+          nextTitle={"Next"}
+          backTitle={"Back"}
+        />
       </form>
     </Paper>
   );
 };
 
-// Connecting to Redux with mapStateToProps and mapDispatchToProps
 export default connect(mapStateToProps, mapDispatchToProps)(EducationComponent);

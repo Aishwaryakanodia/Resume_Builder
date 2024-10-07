@@ -35,8 +35,8 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 const PersonalInfoComponent = (props) => {
   const [loading, setLoading] = useState(false);
   const [imgSnackbar, setImgSnackbar] = useState(false);
-  const [vertical] = useState("top");
-  const [horizontal] = useState("center");
+  const [vertical, setVertical] = useState("top");
+  const [horizontal, setHorizontal] = useState("center");
 
   const {
     register,
@@ -47,6 +47,7 @@ const PersonalInfoComponent = (props) => {
   const [img, setImg] = useState(
     props.personalInfo.profileImg.length ? props.personalInfo.profileImg : ""
   );
+  const [sotreImage, setSotreImage] = useState([]);
 
   const [open, setOpen] = useState(false);
 
@@ -58,6 +59,7 @@ const PersonalInfoComponent = (props) => {
   };
 
   const handleNext = (data) => {
+    // console.log(img.length);
     if (img.length) {
       setLoading(true);
       props.onAddPersonalInfo({ profileImg: img, ...data });
@@ -103,6 +105,8 @@ const PersonalInfoComponent = (props) => {
   };
 
   const saveImage = () => {
+    setSotreImage([{ img }]);
+    // props.onSetProfileImage(img);
     setOpen(false);
   };
 
@@ -114,7 +118,7 @@ const PersonalInfoComponent = (props) => {
     setImgSnackbar(false);
   };
 
-  // Getting window width
+  // getting windows width
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window;
     return { innerWidth, innerHeight };
@@ -133,12 +137,17 @@ const PersonalInfoComponent = (props) => {
     };
   }, []);
 
+  // const profileImg = sotreImage.map((ele) => ele.img);
+  // console.log(props.personalInfo, errors);
+
   return (
     <Paper className="personal-info-paper" elevation={3}>
       <Avatar
         sx={{ width: 120, height: 120, marginBottom: 1 }}
         alt="profile img"
-        src={img.length ? img : ""}
+        src={
+          img.length ? img : ""
+        }
       />
       <div>
         <Button
@@ -288,22 +297,6 @@ const PersonalInfoComponent = (props) => {
             errorMessage={errors.state ? errors.state.message : null}
           />
           <InputComponent
-            title={"Country"}
-            type={"text"}
-            name={"country"}
-            register={register}
-            multiline={false}
-            value={props.personalInfo.country}
-            setValue={(value) =>
-              props.onAddPersonalInfo({
-                ...props.personalInfo,
-                country: value,
-              })
-            }
-            error={errors.country ? true : false}
-            errorMessage={errors.country ? errors.country.message : null}
-          />
-          <InputComponent
             title={"Postal Code"}
             type={"number"}
             name={"postalCode"}
@@ -317,23 +310,41 @@ const PersonalInfoComponent = (props) => {
               })
             }
             error={errors.postalCode ? true : false}
-            errorMessage={
-              errors.postalCode ? errors.postalCode.message : null
-            }
+            errorMessage={errors.postalCode ? errors.postalCode.message : null}
           />
         </div>
-        <Divider />
+        <InputComponent
+          title={"Objective"}
+          type={"text"}
+          name={"objective"}
+          register={register}
+          rows={4}
+          value={props.personalInfo.objective}
+          setValue={(value) =>
+            props.onAddPersonalInfo({
+              ...props.personalInfo,
+              objective: value,
+            })
+          }
+          error={errors.objective ? true : false}
+          errorMessage={errors.objective ? errors.objective.message : null}
+        />
+        <Divider className="personal-details-divider" />
         <BackNextBtnComponent
-          type="submit"
-          back={() => props.setTab(props.tab - 1)}
+          // onNext={() => handleSubmit(handleNext)}
+          loading={loading}
+          tab={props.tab}
+          nextTitle={"Next"}
+          backTitle={"Back"}
         />
       </form>
       <Snackbar
         anchorOrigin={{ vertical, horizontal }}
         open={imgSnackbar}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        message="Please add your profile picture to proceed"
+        message="Please select a profile image"
+        key={vertical + horizontal}
       />
     </Paper>
   );

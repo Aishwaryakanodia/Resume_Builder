@@ -41,11 +41,13 @@ export default function ButtonMUI() {
               textAlign: "justify",
             }}
           >
-            <p>The Resume Builder project is designed to provide users with an intuitive platform to create professional resumes effortlessly. Whether you are a student, a fresh graduate, or an experienced professional, this application helps you craft resumes tailored to your career goals. With its user-friendly interface, users can select from a variety of templates, fill in their personal details, work experience, education, and skills, and generate a polished resume in minutes.</p>
+      <p>The Resume Builder project is designed to provide users with an intuitive platform to create professional resumes effortlessly. Whether you are a student, a fresh graduate, or an experienced professional, this application helps you craft resumes tailored to your career goals. With its user-friendly interface, users can select from a variety of templates, fill in their personal details, work experience, education, and skills, and generate a polished resume in minutes.The Resume Builder project is designed to provide users with an intuitive platform to create professional resumes effortlessly. Whether you are a student, a fresh graduate, or an experienced professional, this application helps you craft resumes tailored to your career goals. With its user-friendly interface, users can select from a variety of templates, fill in their personal details, work experience, education, and skills, and generate a polished resume in minutes.The Resume Builder project is designed to provide users with an intuitive platform to create professional resumes effortlessly. Whether you are a student, a fresh graduate, or an experienced professional, this application helps you craft resumes tailored to your career goals. With its user-friendly interface, users can select from a variety of templates, fill in their personal details, work experience, education, and skills, and generate a polished resume in minutes.</p>
 
 <p>The application offers a seamless experience by allowing users to edit, preview, and download their resumes. The interactive templates are designed to highlight the key strengths and achievements of the individual, making their profile stand out to potential employers. Additionally, the Resume Builder is equipped with features that let users save and manage multiple resumes, catering to different job profiles and applications.</p>
 
 <p>Built with modern web technologies like React, Redux, and Material UI, the platform ensures a responsive and visually appealing user experience. Our mission is to simplify the resume-building process, enabling users to focus more on their job search and career growth. Whether you need a basic layout or a more creative format, Resume Builder has something for everyone!</p>
+
+
           </Typography>
           <Stack>
             <img src={aboutimg} alt="img" style={{ width: 600, height: 400 }} />
